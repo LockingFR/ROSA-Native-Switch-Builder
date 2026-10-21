@@ -1,0 +1,54 @@
+name: ROSA Builder beta bug report
+description: Report a reproducible problem WITHOUT private game files
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never upload:** ROMs, generated game code, NROs/ELFs, keys, saves, caches, console IDs, complete build directories, or unredacted logs.
+  - type: input
+    id: builder
+    attributes:
+      label: Builder version and candidate
+      placeholder: R8 / Preview 0.1
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and architecture
+    validations:
+      required: true
+  - type: dropdown
+    id: sdk
+    attributes:
+      label: devkitPro setup mode
+      options:
+        - Existing SDK
+        - Managed SDK download
+        - Did not reach SDK setup
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Where did the failure occur?
+      options:
+        - Launch / graphical interface
+        - Input / revision validation
+        - Mesa SDK verification
+        - devkitPro download / extraction
+        - ARM11 recompilation
+        - ARM64 compilation
+        - Linking / NRO packaging
+        - Output / SD folder
+        - Switch gameplay
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened? How can you reproduce it?
+      description: Please redact your logs and paths; paste only short non-sensitive error excerpts.
+    validations:
+      required: true

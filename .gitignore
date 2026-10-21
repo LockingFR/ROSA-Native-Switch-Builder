@@ -1,0 +1,14 @@
+# Never commit release executable binaries, user files or build outputs
+*.exe
+*.data
+*.3ds
+*.cia
+*.nro
+*.elf
+*.keys
+*.log
+*.bin
+*.zip
+build/
+release-assets/
+SORTIE_A_PUBLIER/
