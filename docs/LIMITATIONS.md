@@ -1,9 +1,9 @@
-# R9 development-preview limitations
+# R9 beta limitations
 
 - The source-CLI full build passes for the enrolled input, with 133 units and
   byte-identical C/object/ELF/NRO output compared with the R8.2 reference.
-  The final frozen EXE has separate GUI and ROM/SDK checks; a complete final
-  frozen-EXE build and a new clean-machine full build have not been executed.
+  The final frozen EXE also completed all 133 units using automatic Mesa and
+  generated the reference NRO. A new R9 clean-machine full build is unvalidated.
 - New Switch execution and macOS/Wine validation remain pending. No universal
   compatibility or performance claim is made. See QUALIFICATION-R9.md.
 - Only the enrolled Omega Ruby title/executable classes are supported. NCSD
@@ -23,4 +23,5 @@
 - No verified multiplayer support or build cancellation/resume. Forced stopping
   can leave an incomplete new workspace. Existing original files are preserved.
 - Compatible warm shader caches can reduce repeated compilation, not every lag.
-- No new R9 public binary release is announced by this source branch.
+- R9 is a Windows beta. GUI report-export allowlist tests pass; desktop-driven
+  execution of the export button was unavailable in this qualification.

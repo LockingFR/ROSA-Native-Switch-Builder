@@ -1,7 +1,8 @@
-# R9 guided preview
+# R9 beta - three steps on Windows
 
-R9 is a development candidate, not a new public release download. Existing R8,
-R8.1 and R8.2 packages are preserved. Use a matching verified EXE/DATA pair.
+Download `ROSA-Builder-R9-beta.zip` from the official v0.2.0-beta release and
+extract it into a local folder. Keep all files together and compare SHA-256
+values with `SHA256SUMS-R9.txt` on the release page. Older packages are preserved.
 
 1. Keep `ROSA-Builder.exe` beside `ROSA-Builder.data` on a local Windows disk.
 2. Select your own unencrypted Omega Ruby cartridge dump (`.3ds` or `.cci`).
@@ -41,3 +42,9 @@ this development environment; use Windows or a suitable Windows VM for now.
 The SD output contains the owner's game-derived files and must remain private.
 Other players must build from their own input and create their own saves.
 HOME-forwarder installation and NAND changes remain separate operations.
+
+The final Windows EXE completed a 133-unit build with automatic Mesa; its NRO
+matches the R8.2 reference byte for byte. ROM/SDK diagnostic reports and the
+source-level export allowlist were tested. A new R9 clean-machine full build,
+Wine/macOS and new Switch execution have not been validated. The GUI export
+button was not driven by desktop automation in this qualification.

@@ -1,4 +1,4 @@
-# R9 Guided Preview
+# R9 beta (v0.2.0-beta)
 
 - Replace the long mandatory SDK form with dump/output selection and automatic,
   hash-verified dependency selection. Keep manual options in Advanced.
@@ -14,5 +14,8 @@
 - Fix detected-installed-devkitPro plus automatic-Mesa build orchestration.
 - Preserve B20 runtime DATA, original SDKs, existing releases and all user saves.
 
-This is a development candidate. PC tests and build/container checks are distinct
-from Switch validation. No new public release is created automatically.
+The final frozen Windows EXE completed all 133 compilation units and generated
+the same NRO as the R8.2 reference. 42 source tests, real EXE ROM/SDK diagnostics,
+offline Mesa install/reuse and container checks pass. This beta is Windows
+qualified; Wine/macOS, a new clean-machine R9 build and new Switch execution
+remain unvalidated. No HD/HUD runtime change is included in this Builder release.

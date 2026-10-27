@@ -1,5 +1,8 @@
 # R9 qualification - October 27, 2026
 
+Historical candidate report. Superseded by [the final beta qualification](QUALIFICATION-R9-BETA.md)
+after the complete frozen-EXE build and the owner's publication instruction.
+
 **GO for controlled Windows testing of this candidate. No new public binary
 release was created. Wine/macOS and new Switch execution remain unvalidated.**
 
