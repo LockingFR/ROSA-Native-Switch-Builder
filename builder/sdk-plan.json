@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "description": "Official unmodified devkitPro packages, downloaded locally; no system installation or game uploads.",
+  "packages": [
+    {
+      "name": "devkita64-binutils-2.46.0-1-x86_64.pkg.tar.zst",
+      "bytes": 6380156,
+      "sha256": "c516a70a31521b61e18759669c6f5c6718796a6cbb0b3c1c023a2ac418f79988",
+      "url": "https://pkg.devkitpro.org/packages/windows/x86_64/devkita64-binutils-2.46.0-1-x86_64.pkg.tar.zst"
+    },
+    {
+      "name": "devkita64-gcc-16.1.0-1-x86_64.pkg.tar.zst",
+      "bytes": 93992028,
+      "sha256": "4ccf7ee6f3d85248f3b58708e44aa3e9f777479ff90cd4409a95862752e85400",
+      "url": "https://pkg.devkitpro.org/packages/windows/x86_64/devkita64-gcc-16.1.0-1-x86_64.pkg.tar.zst"
+    },
+    {
+      "name": "devkita64-newlib-4.6.0.20260123-4-any.pkg.tar.zst",
+      "bytes": 843202,
+      "sha256": "fc97ba1009a94b68f8714c3cc548ef697ca82687b72fe0c05a7ca3df81beb53e",
+      "url": "https://pkg.devkitpro.org/packages/devkita64-newlib-4.6.0.20260123-4-any.pkg.tar.zst"
+    },
+    {
+      "name": "devkita64-rules-1.1.1-1-any.pkg.tar.zst",
+      "bytes": 5846,
+      "sha256": "2649cf7827243447070073acc2aa2fee152a0592fc30e827ceed803c565a1ede",
+      "url": "https://pkg.devkitpro.org/packages/devkita64-rules-1.1.1-1-any.pkg.tar.zst"
+    },
+    {
+      "name": "libnx-4.12.0-1-any.pkg.tar.zst",
+      "bytes": 10347882,
+      "sha256": "c6950bdf8e4b872ece492225368c03e633776329548a7494f91aa1e8f239cd8a",
+      "url": "https://pkg.devkitpro.org/packages/libnx-4.12.0-1-any.pkg.tar.zst"
+    },
+    {
+      "name": "switch-tools-1.13.1-1-x86_64.pkg.tar.zst",
+      "bytes": 161833,
+      "sha256": "c9c5fc60e3dd2f82d7c6592611bd37cc610d150ef4fa75fe09ce329df998084d",
+      "url": "https://pkg.devkitpro.org/packages/windows/x86_64/switch-tools-1.13.1-1-x86_64.pkg.tar.zst"
+    }
+  ]
+}

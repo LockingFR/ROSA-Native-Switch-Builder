@@ -1,0 +1,8 @@
+{
+  "version": "0.2.0-preview-r9",
+  "candidate": "R9 Guided Preview",
+  "data_sha256": "55f225cfd9e03ca4b39997749dfa0610a9c8c67a837b77dcefcb9c1a44fd088d",
+  "distribution_approved": false,
+  "console_validated": false,
+  "payload_compatibility_version": "0.1-preview"
+}

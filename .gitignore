@@ -12,3 +12,7 @@
 build/
 release-assets/
 SORTIE_A_PUBLIER/
+
+# Local Python test artifacts
+__pycache__/
+*.pyc
