@@ -61,7 +61,7 @@ class WiringTests(TestCase):
 
     def test_manual_sdk_never_contacts_package_installer(self):
         steps=self.run_until_codegen(False)
-        self.assertEqual(steps,['check_tools','verify_all'])
+        self.assertEqual(steps,['verify_all','check_tools'])
 
     def test_managed_sdk_refuses_bad_mesa_before_download(self):
         with tempfile.TemporaryDirectory() as d:

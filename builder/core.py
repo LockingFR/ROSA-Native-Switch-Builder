@@ -202,7 +202,6 @@ def build(rom,output,devkit,mesa,data,expected,emit=lambda **event:None,jobs=2,f
         mesa=local_path(mesa)
         if not managed_sdk:
             devkit=local_path(devkit)
-            tools=check_tools(devkit,mesa)
     output.mkdir();log=output/'build.log'
     payload=output/'payload';manifest=unpack_payload(data,payload,expected)
     if (payload/'mesa-sdk.json').is_file():
@@ -220,7 +219,7 @@ def build(rom,output,devkit,mesa,data,expected,emit=lambda **event:None,jobs=2,f
     else:
         import sdk
         sdk.verify_sdk_files(payload,devkit,mesa)
-        if mesa_mode!='existing':tools=check_tools(devkit,mesa)
+        tools=check_tools(devkit,mesa)
     paths=[(rom,'<personal-dump>'),(output,'<workspace>'),(devkit,'<devkitPro>'),(mesa,'<Mesa-SDK>')]
     # Exact SDK bytes are part of compatibility, not merely a version label.
     # Verify again in managed mode after promoting the staged SDK.
