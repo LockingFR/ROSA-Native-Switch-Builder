@@ -1,7 +1,8 @@
 # Licenses and source availability
 
-Original ROSA/Builder development sources remain private. Dependency terms
-still apply to each distributed component; packaging does not remove them.
+The guided Builder Python source is available on this development branch.
+The separate ROSA runtime repository remains private. Dependency terms still
+apply to every distributed component; packaging does not remove them.
 
 - Pocket Native, its bundled Zakuro/recompiler sources, and ABI identify as
   MIT. Copyright and license notices accompany the payload. Use the exact
@@ -20,9 +21,11 @@ still apply to each distributed component; packaging does not remove them.
   bundling exception allows closed applications, subject to dependency terms.
 - Microsoft runtime DLL redistribution terms also require review of the actual
   bundled DLLs and their permitted source, not just the Python application license.
-- The compiler toolchain and Mesa SDK are not included. If they are bundled
-  later, review their exact components, GCC runtime exceptions, and any source
-  obligations before distribution. Mesa is not uniformly covered by one license.
+- R9 reuses the authenticated R8.2 DATA with the Mesa Switch 26.2.4 SDK, its
+  source snapshot, local patch, provenance and component notices. The GCC/libnx
+  toolchain remains a separately downloaded pinned official dependency. Mesa
+  is not uniformly covered by one license; consult the included exact notices.
+  Older published R8 packages have their own release-specific inventories.
 - Sphaira is not included. Its separate GPL license applies to its distribution
   and modifications; Builder does not install or conceal a copy of it.
 
