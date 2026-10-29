@@ -25,5 +25,5 @@ if __name__=='__main__':
     parser.add_argument('--output',required=True,type=Path)
     args=parser.parse_args()
     profile=derive(args.rom)
-    with core.local_path(args.output).open('x',encoding='utf-8') as stream:
+    with core.local_path(args.output).open('x',encoding='utf-8',newline='\n') as stream:
         stream.write('"""Comparison metadata from the exact SHA-256-verified B20 input; never authorizes acceptance."""\nREFERENCE_DIAGNOSTICS = '+pprint.pformat(profile,sort_dicts=False,width=100)+'\n')
