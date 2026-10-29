@@ -5,7 +5,7 @@ import hashlib,json,os,re,shutil,struct,subprocess,time,zipfile
 import compat_manifest
 
 VERSION='0.1-preview'  # DATA compatibility version; stable B20 payload retained
-UI_VERSION='0.2.0-preview-r9'
+UI_VERSION='0.2.1-preview-r9.1'
 ROM_SHA='bd5b432f304edaf04f92fa853f5e52bd0345474e13983306c26c88cfc53f4136'
 TITLE=0x000400000011C400
 NRO='rosa-b20-mesa26.nro'
@@ -14,6 +14,11 @@ FLAGS=['-O2','-ffp-contract=off','-fno-math-errno','-w',
 HIDDEN={'creationflags':subprocess.CREATE_NO_WINDOW} if os.name=='nt' else {}
 
 class BuildError(Exception):pass
+
+class CompatibilityError(BuildError):
+    def __init__(self, support_code, message):
+        super().__init__(message)
+        self.support_code = support_code
 
 def local_path(value):
     # Reject UNC syntax before Path normalization (also in cross-platform tests).
@@ -42,7 +47,7 @@ def _sha_range(stream, offset, size):
         size-=len(chunk)
     return hashed.hexdigest()
 
-def inspect_rom(path, hash_partition=True):
+def inspect_rom(path, hash_partition=True, diagnostics=False):
     """Read explicit NCSD/NCCH/ExeFS boundaries; no hardcoded region inference."""
     path=local_path(path)
     if path.suffix.lower() not in ('.3ds','.cci'):raise BuildError('Select an unencrypted NCSD cartridge dump (.3ds or .cci). CIA installation packages and CXI executables are not supported.')
@@ -68,6 +73,8 @@ def inspect_rom(path, hash_partition=True):
         exheader_size=struct.unpack_from('<I',ncch,0x180)[0]
         if exheader_size<0x200 or exheader_size>0x800 or 0x200+exheader_size>ncch_size:
             raise BuildError('Unsupported or missing executable header.')
+        if exefs<0x200+exheader_size:
+            raise BuildError('Executable filesystem overlaps the executable header.')
         exheader_digest=_sha_range(f,offset+0x200,exheader_size)
         f.seek(offset+0x20e);remaster_version=struct.unpack('<H',f.read(2))[0]
         f.seek(offset+exefs);exe_header=f.read(0x200)
@@ -84,9 +91,37 @@ def inspect_rom(path, hash_partition=True):
         code_pos,code_len=code[0]
         code_digest=_sha_range(f,offset+exefs+0x200+code_pos,code_len)
         ncch_digest=_sha_range(f,offset,ncch_size) if hash_partition else None
-    return {'title_id':f'{TITLE:016X}', 'ncch_sha256':ncch_digest,
+        profile = None
+        if diagnostics:
+            import rom_diagnostics
+            f.seek(offset+0x200)
+            ex_raw=f.read(exheader_size)
+            noncode=[]
+            occupied=[(code_pos,code_pos+code_len)]
+            for i in range(10):
+                rec=exe_header[i*16:(i+1)*16]
+                if not rec[:8].strip(b'\0') or rec[:8].split(b'\0',1)[0]==b'.code':continue
+                pos,length=struct.unpack_from('<II',rec,8)
+                if pos+length>exefs_size-0x200 or any(pos<end and start<pos+length for start,end in occupied):
+                    raise BuildError('Invalid or overlapping ExeFS resource bounds.')
+                occupied.append((pos,pos+length))
+                # Hash the record too: names/order/layout never leave the machine.
+                noncode.append(hashlib.sha256(rec).hexdigest()+_sha_range(f,offset+exefs+0x200+pos,length))
+            romfs,romfs_size=(struct.unpack_from('<I',ncch,p)[0]*512 for p in (0x1b0,0x1b4))
+            if romfs_size and (romfs<0x200+exheader_size or romfs+romfs_size>ncch_size
+                               or (romfs<exefs+exefs_size and exefs<romfs+romfs_size)):
+                raise BuildError('Invalid or overlapping RomFS resource bounds.')
+            profile={'exheader':rom_diagnostics.exheader_profile(ex_raw), 'resources':{
+                'romfs_bytes':romfs_size,
+                'romfs_sha256':_sha_range(f,offset+romfs,romfs_size) if romfs_size else None,
+                'exefs_noncode_sha256':hashlib.sha256(''.join(noncode).encode('ascii')).hexdigest(),
+                'exefs_header_sha256':hashlib.sha256(exe_header).hexdigest(),
+                'ncch_header_sha256':hashlib.sha256(ncch).hexdigest()}}
+    result={'title_id':f'{TITLE:016X}', 'ncch_sha256':ncch_digest,
             'code_sha256':code_digest,'exheader_sha256':exheader_digest,
             'code_bytes':code_len,'ncch_bytes':ncch_size,'remaster_version':remaster_version,'format':'NCSD','encryption':'unencrypted'}
+    if profile is not None:result['diagnostic_profile']=profile
+    return result
 
 def classify_rom_identity(identity,digest,allow_code_equivalent=False):
     if digest==ROM_SHA:
@@ -103,10 +138,12 @@ def classify_rom_identity(identity,digest,allow_code_equivalent=False):
             compatibility='identical-game-partition'
         elif identity['code_sha256']==expected_code and identity['exheader_sha256']==expected_exheader:
             if not allow_code_equivalent:
-                raise BuildError('Game executable is identical, but other game resources differ. Enable the experimental code-equivalent option only if you accept unvalidated resource compatibility.')
+                raise CompatibilityError('RESOURCES_NOT_VALIDATED', 'Game code and exheader match, but the partition differs; resource compatibility is unvalidated. Enable the experimental code-equivalent option only if you accept unvalidated resource compatibility.')
             compatibility='EXPERIMENTAL-code-equivalent-unvalidated-resources'
         else:
-            raise BuildError('Unsupported executable revision/region. This B20 recompiler has not been validated for that code. Do not bypass the check; send only a SHA-256 diagnostic, never the ROM.')
+            if identity['code_sha256']==expected_code:
+                raise CompatibilityError('EXHEADER_NOT_ENROLLED', 'Stored game code matches B20, but the exheader differs and is not enrolled. Memory layout, compression, execution settings and capabilities require review. Export the R9.1 diagnostic; compatibility is not demonstrated.')
+            raise CompatibilityError('CODE_NOT_ENROLLED', 'Unsupported executable: stored game code differs from B20. This code revision is not enrolled. Export the diagnostic, never the ROM.')
     return compatibility
 
 

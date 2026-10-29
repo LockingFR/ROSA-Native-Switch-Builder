@@ -5,11 +5,12 @@ Discovery never installs globally and never weakens core ROM/SDK validation.
 """
 from pathlib import Path, PurePosixPath
 import json, os, platform, re, shutil, zipfile, tempfile, sys
-import core,compat_manifest
+import core,compat_manifest,rom_diagnostics
 
-REPORT_SCHEMA=1
+REPORT_SCHEMA=2
 
 def explain(error):
+    if isinstance(error,core.CompatibilityError):return str(error)
     if hasattr(error,'diagnostic'):return str(error)
     text=str(error)
     if 'encrypt' in text.lower():return 'Encrypted dump: create your own unencrypted cartridge dump first. The Builder cannot decrypt it or accept keys.'
@@ -30,7 +31,7 @@ def rom_report(path,allow_code_equivalent=False):
         elif header[0x100:0x104]==b'NCCH':result['format']='NCCH/CXI'
         elif path.suffix.lower()=='.cia':result['format']='CIA (extension; build unsupported)'
         before=path.stat()
-        details=core.inspect_rom(path,hash_partition=True)
+        details=core.inspect_rom(path,hash_partition=True,diagnostics=True)
         digest=core.sha(path)
         after=path.stat()
         if (before.st_size,before.st_mtime_ns)!=(after.st_size,after.st_mtime_ns):raise core.BuildError('Input changed during inspection.')
@@ -38,6 +39,8 @@ def rom_report(path,allow_code_equivalent=False):
         result.update(sha256=digest,bytes=after.st_size,input_stable=True)
         result['reference_matches']={'full_file':digest==core.ROM_SHA,'game_partition':details['ncch_sha256']==compat_manifest.REFERENCE_NCCH_SHA256,'executable':details['code_sha256']==compat_manifest.REFERENCE_CODE_SHA256,'exheader':details['exheader_sha256']==compat_manifest.REFERENCE_EXHEADER_SHA256}
         result['reference_hashes']={'full_file':core.ROM_SHA,'game_partition':compat_manifest.REFERENCE_NCCH_SHA256,'executable':compat_manifest.REFERENCE_CODE_SHA256,'exheader':compat_manifest.REFERENCE_EXHEADER_SHA256}
+        result['diagnostic_profile']=details['diagnostic_profile']
+        result['diagnostic_comparison']=rom_diagnostics.compare(details['diagnostic_profile'],getattr(compat_manifest,'REFERENCE_DIAGNOSTICS',None))
         verdict=core.classify_rom_identity(details,digest,allow_code_equivalent)
         result.update(status=verdict,build_allowed=True)
         result['message']='Compatible input verified. Game data remains local.'
@@ -45,7 +48,7 @@ def rom_report(path,allow_code_equivalent=False):
         if 'encrypted' in str(error).lower():result['encryption']='encrypted'
         result['message']=explain(error)
         # Export fixed support codes, never arbitrary exception text containing paths.
-        result['support_code']='ENCRYPTED' if result['encryption']=='encrypted' else ('EXECUTABLE_NOT_ENROLLED' if result.get('code_sha256') else 'INPUT_UNSUPPORTED')
+        result['support_code']=getattr(error,'support_code', 'ENCRYPTED' if result['encryption']=='encrypted' else 'INPUT_UNSUPPORTED')
     return result
 
 def devkit_candidates(explicit=None):
@@ -117,6 +120,10 @@ def export_report(destination,rom=None,events=(),result=None,sdk=None):
     if rom:
         allowed=('format','encryption','status','build_allowed','title_id','code_sha256','exheader_sha256','code_bytes','remaster_version','sha256','bytes','support_code','ncch_sha256','input_stable','reference_matches','reference_hashes')
         body['game']={k:rom[k] for k in allowed if k in rom}
+        if 'diagnostic_profile' in rom:
+            profile=rom_diagnostics.safe_profile(rom['diagnostic_profile'])
+            body['game']['diagnostic_profile']=profile
+            body['game']['diagnostic_comparison']=rom_diagnostics.compare(profile,getattr(compat_manifest,'REFERENCE_DIAGNOSTICS',None))
     for event in events:
         safe={k:event[k] for k in ('done','total') if type(event.get(k)) in (int,float)}
         if event.get('stage') in ('validate','generate','compile','link','sdk','stage','copy','complete','error','checked','diagnosed'):safe['stage']=event['stage']

@@ -1,5 +1,10 @@
 # ROSA Builder R9 beta - guided Windows setup
 
+The source branch also contains the targeted [R9.1 diagnostic correction](docs/CHANGELOG-R9.1.md).
+It keeps unknown exheaders blocked and leaves the published R9 beta and B20
+runtime unchanged. New schema-2 reports separate code, exheader and resource
+differences; they are not a compatibility certificate.
+
 Download [R9 beta (v0.2.0-beta)](https://github.com/LockingFR/ROSA-Native-Switch-Builder/releases/tag/v0.2.0-beta),
 extract the ZIP, and keep `ROSA-Builder.exe` beside `ROSA-Builder.data`.
 Compare the files with the release's `SHA256SUMS-R9.txt`. R8/R8.1 assets are

@@ -75,7 +75,7 @@ def cli():
 def gui():
     import tkinter as tk
     from tkinter import ttk,filedialog,messagebox
-    win=tk.Tk();win.title('ROSA Builder R9 - Guided Preview');win.geometry('820x710');win.minsize(740,650)
+    win=tk.Tk();win.title('ROSA Builder R9.1 - Diagnostic Preview');win.geometry('820x710');win.minsize(740,650)
     if '--ui-smoke-report' in sys.argv:win.withdraw()
     style=ttk.Style(win);style.theme_use('clam')
     style.configure('.',font=('Segoe UI',10));style.configure('TButton',padding=7)
@@ -172,7 +172,7 @@ def gui():
         if active:return
         path=filedialog.asksaveasfilename(parent=win,title='Export safe diagnostic (no game or personal paths)',defaultextension='.json',initialfile='ROSA-diagnostic.json',filetypes=[('Diagnostic JSON','*.json')])
         if not path:return
-        try:workflow.export_report(path,snapshot.get('rom'),events,snapshot.get('result'),snapshot.get('sdk'));messagebox.showinfo('Report exported','The report contains hashes and stage counters only. Review it before sharing. ROMs, saves, keys, file names, paths and raw logs are excluded.',parent=win)
+        try:workflow.export_report(path,snapshot.get('rom'),events,snapshot.get('result'),snapshot.get('sdk'));messagebox.showinfo('Report exported','The report contains hashes, numeric metadata and stage counters. Review it before sharing. ROMs, saves, keys, file names, paths and raw logs are excluded.',parent=win)
         except (OSError,core.BuildError):messagebox.showerror('Report preserved','Choose a new local report filename. Existing files are not replaced.',parent=win)
     export_button=ttk.Button(buttons,text='Export diagnostic',command=export);export_button.pack(side='left',padx=6)
     def advanced_toggle():
